@@ -1,0 +1,101 @@
+db.posts.find({ likes: { $and: 3 } })
+
+db.posts.find( { $and: [ { likes: { $ne: 3 } }, { likes: { $exists: true } } ] } )
+
+db.posts.find( { $and: [ { likes: { $ne: 3 } },  { category: 'News'  } ] } )
+
+db.posts.find( { $or: [ { likes: { $lt: 20 } }, { price: 10 } ] } )
+
+db.posts.find( { $nor: [ { likes: 5 }, { title: 'Post 4' } ]  } )
+
+db.posts.find( { likes: { $not: { $gt: 4 } } } )
+
+db.posts.updateOne({ title: 'Post 6' },
+{
+  $set: {
+    title: 'Post 7',
+    body: 'Body of post.',
+    category: 'News'
+  }
+},
+{
+  upsert: true
+})
+
+db.posts.find({}, {title: 'Post 4', date: 3})
+
+db.movies.aggregate([
+  { $group: { _id: "$rated", totalUsers: { $sum: 1 } } }
+])
+
+db.movies.aggregate([
+  { $group: { _id: "countrated", totalUsers: { countsum: 1 } } }
+])
+
+
+db.movies.aggregate([ { $limit: 5 } ]) 
+
+db.movies.aggregate([
+  {
+    $project: {
+      "year": 1,
+      "title": 1,
+      "rated": 1
+    }
+  },
+  {
+    $limit: 5
+  }
+])           
+
+db.movies.aggregate([ 
+  { 
+    $sort: { "accommodates": +1 } 
+  },
+  {
+    $project: {
+      "title": 1,
+      "rated": 1
+    }
+  },
+  {
+    $limit: 1
+  }
+])
+
+db.comments.aggregate([
+  {
+    $lookup: {
+      from: "movies",
+      localField: "movie_id",
+      foreignField: "_id",
+      as: "movie_details",
+    },
+  },
+  {
+    $limit: 5
+  }
+])
+
+
+
+db.movies.aggregate([
+  {
+    $match: { "rated": "TV-G" }
+  },
+  {
+    $count: "totalTV-G"
+  }
+])
+
+
+
+db.movies.aggregate([ 
+  { $match : { rated : "TV-G" } },
+  { $limit: 2 },
+  { $project: {
+    "runtime": 1,
+    "year": 1,
+    
+  }}
+])
